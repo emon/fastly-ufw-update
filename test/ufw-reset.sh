@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # sample of rules
 # [ 1] 22/tcp                     ALLOW IN    23.235.32.0/20             # from https://api.fastly.com/public-ip-list
