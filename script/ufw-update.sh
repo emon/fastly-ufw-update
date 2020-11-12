@@ -23,6 +23,7 @@ fastly_address | sort > ${fastly_ips_new}
 
 DIFF=`diff -u0 ${fastly_ips_old} ${fastly_ips_new} | tail -n +3`
 rm -f -- "$fastly_ips_old" "$fastly_ips_new"
+trap - EXIT
 
 echo "${DIFF}" | tee /dev/stderr | while read line; do
     type=`echo $line | cut -b 1`
@@ -38,5 +39,3 @@ echo "${DIFF}" | tee /dev/stderr | while read line; do
 	    ;;
     esac
 done
-
-trap - EXIT
