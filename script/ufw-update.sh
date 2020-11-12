@@ -18,14 +18,8 @@ fastly_ips_old=$(tempfile) || exit
 fastly_ips_new=$(tempfile) || exit
 trap "rm -f -- '$fastly_ips_old' '$fastly_ips_new'" EXIT
 
-echo fastly_ips_old: ${fastly_ips_old}
-echo fastly_ips_new: ${fastly_ips_new}
-
 ufw_status | get_address | sort > ${fastly_ips_old}
 fastly_address | sort > ${fastly_ips_new}
-
-cp ${fastly_ips_old} ./old
-cp ${fastly_ips_new} ./new
 
 DIFF=`diff -u0 ${fastly_ips_old} ${fastly_ips_new} | tail -n +3`
 rm -f -- "$fastly_ips_old" "$fastly_ips_new"
