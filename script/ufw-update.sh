@@ -1,8 +1,17 @@
 #!/bin/sh
 
+set -e
+
 MAGIC_WORD='from https://api.fastly.com/public-ip-list'
-DEBUG=${DEGUG:-FALSE}
-CMD=$1
+DEBUG=${DEBUG:-FALSE}
+CMD="$1"
+SUBCMD="$2"
+
+unset tempdir
+
+at_exit(){
+    [ -n "${tempdir-}" ] && rm -rf "$tempdir"
+}
 
 log(){
     logger -p local0.info --id=$$ "$*"
@@ -15,7 +24,6 @@ decho(){
     fi
 }
 
-
 ufw_status(){
     sudo ufw status numbered | grep "${MAGIC_WORD}"
 }
@@ -25,21 +33,19 @@ get_address(){
 }
 
 fastly_address(){
-    curl -s -o - https://api.fastly.com/public-ip-list | ./jq.py
+     fastly_json="$tempdir/json"
+     curl -f -s -o "$fastly_json" https://api.fastly.com/public-ip-list
+     ./jq.py < "$fastly_json"
 }
 
-
 ufw_diff(){
-    fastly_ips_old=$(tempfile) || exit
-    fastly_ips_new=$(tempfile) || exit
-    trap "rm -f -- '$fastly_ips_old' '$fastly_ips_new'" EXIT
+    fastly_ips_old="$tempdir/ips_old"
+    fastly_ips_new="$tempdir/ips_new"
 
-    ufw_status | get_address | sort > ${fastly_ips_old}
-    fastly_address | sort > ${fastly_ips_new}
+    ufw_status | get_address | sort > "${fastly_ips_old}"
+    fastly_address | sort > "${fastly_ips_new}"
 
-    diff -u0 ${fastly_ips_old} ${fastly_ips_new} | tail -n +3
-    rm -f -- "$fastly_ips_old" "$fastly_ips_new" > /dev/null
-    trap - EXIT
+    diff -u0 "${fastly_ips_old}" "${fastly_ips_new}" | tail -n +3
 }
 
 ufw_apply(){
@@ -59,13 +65,30 @@ ufw_apply(){
     done
 }
 
+trap at_exit EXIT
+trap 'rc=$?; trap - EXIT; at_exit; exit $?' INT PIPE TERM
+tempdir=$(mktemp -d) || exit
+decho "tempdir=${tempdir}"
+
 log $0 ${CMD}
 case ${CMD} in
-    local)
-	ufw_status
-	;;
-    fetch)
-	fastly_address
+    show)
+	case ${SUBCMD} in
+	    local)
+		echo "# local ufw rules"
+		ufw_status | get_address | sort
+		;;
+	    remote)
+		echo "# fastly's latest rules"
+		fastly_address
+		;;
+	    '')
+		echo "# local ufw rules"
+		ufw_status | get_address | sort
+		echo "# fastly's latest rules"
+		fastly_address
+		;;
+	    esac
 	;;
     diff)
 	ufw_diff
@@ -74,7 +97,12 @@ case ${CMD} in
 	ufw_diff | ufw_apply
 	;;
     *)
-	ufw_status
+	echo "Usage: $0 [command]"
+	echo " show        - show local and fastly's latest rules"
+	echo " show local  - show local ufw rules"
+	echo " show remote - show fastly's latest rules"
+	echo " diff        - diff local and remote"
+	echo " apply       - apply latest rules"
 	;;
 esac
 log finished
