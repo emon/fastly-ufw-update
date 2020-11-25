@@ -140,12 +140,14 @@ DEBUG_LEVEL=1 ./ufw-update.sh apply
 
 ## rsyslog の設定
 
+本リポジトリ内の rsyslog.d ディレクトリ内の設定ファイルをコピーして rsyslogd に適用する。
 ```
 sudo cp fastly-allow-ufw/rsyslog.d/30-fastly-allow-ufw.conf /etc/rsyslog.d/
 sudo systemctl restart rsyslog.service
+sudo touch /var/log/fastly-ufw-update.log
 ```
 
-`30-fastly-allow-ufw.conf` で指定している `/var/log/fastly-ufw-update.log` に下記のようなログが残る。
+`/var/log/fastly-ufw-update.log` に下記のようなログが残るようになる。
 
 ```log:/var/log/fastly-ufw-update.log
 [debug] ./ufw-update.sh show
