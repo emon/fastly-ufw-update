@@ -22,7 +22,10 @@ cd fastly-ufw-update/
 ダミーのルールとして、
 - fastly の本物のIPアドレスの一部
 - fastly とは関係のないIPアドレス
+
 を登録している。
+
+### ufw-update.sh
 
 `ufw-update.sh` は引数にサブコマンド名を取る。
 ```
@@ -36,7 +39,7 @@ Usage: ./ufw-update.sh [command]
  apply       - apply latest rules
 ```
 
-### ufw-update.sh show
+#### ufw-update.sh show
 ローカル(ufw)の設定と、fastly の公開している最新情報を、それぞれ表示する。
 下記でローカル設定として表示されているのは、上記の `ufw-test-setup.sh` で登録したダミーのルール。
 
@@ -76,7 +79,7 @@ Usage: ./ufw-update.sh [command]
 199.232.0.0/16
 ```
 
-### ufw-update.sh diff
+#### ufw-update.sh diff
 ローカル設定と、fastly の公開している最新情報との差分を表示する。
 ```
 ./ufw-update.sh diff
@@ -95,7 +98,7 @@ Usage: ./ufw-update.sh [command]
 -8.8.8.8
 ```
 
-### ufw-update.sh apply
+#### ufw-update.sh apply
 
 diff で表示されている差分を適用する。
 環境変数 `DEBUG_LEVEL` に `1` を設定すると `ufw` での登録内容を表示する。
