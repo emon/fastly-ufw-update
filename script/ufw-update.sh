@@ -2,26 +2,30 @@
 
 set -e
 
-MAGIC_WORD='from https://api.fastly.com/public-ip-list'
-DEBUG=${DEBUG:-FALSE}
-CMD="$1"
-SUBCMD="$2"
-
-unset tempdir
-
 at_exit(){
-    [ -n "${tempdir-}" ] && rm -rf "$tempdir"
+    decho 3 "at_exit called"
+    [ -n "${tempdir-}" ] && rm -rf "$tempdir" && decho 3 "rm -rf $tempdir"
 }
 
 log(){
-    logger -p local0.info --id=$$ "$*"
-    decho "log:" "$*"
+    LOG_LEVEL=$1; shift
+    case ${LOG_LEVEL} in
+	0) LOG_PRIORITY=notice ;;
+	1) LOG_PRIORITY=info ;;
+	2) LOG_PRIORITY=debug ;;
+	*) LOG_PRIORITY=debug ;;
+    esac
+    logger -p local0.${LOG_PRIORITY} --id=$$ "[${LOG_PRIORITY}] $*"
+    decho ${LOG_LEVEL} "$*"
 }
 
 decho(){
-    if [ "$DEBUG" != "FALSE" ]; then
-	echo "$*" > /dev/stderr
+    LOG_LEVEL=$1; shift
+
+    if [ "$DEBUG_LEVEL" -ge "$LOG_LEVEL" ]; then
+       echo "$*" > /dev/stderr
     fi
+
 }
 
 ufw_status(){
@@ -54,23 +58,29 @@ ufw_apply(){
 	ip=`echo $line | cut -b 2-`
 	case ${type} in
 	    "+" )
-		log sudo ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
-	        sudo ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
+		log 1 sudo ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
+	              sudo ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
 		;;
 	    "-" )
-		log sudo ufw delete allow in from ${ip} to any port ssh
-		yes| sudo ufw delete allow in from ${ip} to any port ssh
+		log 1 sudo ufw delete allow in from ${ip} to any port ssh
+		yes | sudo ufw delete allow in from ${ip} to any port ssh
 		;;
 	esac
     done
 }
 
+MAGIC_WORD='from https://api.fastly.com/public-ip-list'
+DEBUG_LEVEL=${DEBUG_LEVEL:-0}
+decho 3 "DEBUG_LEVEL=${DEBUG_LEVEL}"
+CMD="$1"
+SUBCMD="$2"
+
 trap at_exit EXIT
 trap 'rc=$?; trap - EXIT; at_exit; exit $?' INT PIPE TERM
 tempdir=$(mktemp -d) || exit
-decho "tempdir=${tempdir}"
+decho 3 "tempdir=${tempdir}"
 
-log $0 ${CMD}
+log 2 $0 ${CMD}
 case ${CMD} in
     show)
 	case ${SUBCMD} in
@@ -87,6 +97,9 @@ case ${CMD} in
 		ufw_status | get_address | sort
 		echo "# fastly's latest rules"
 		fastly_address
+		;;
+	    *)
+		echo "invalid subcommand" > /dev/stderr
 		;;
 	    esac
 	;;
@@ -105,4 +118,4 @@ case ${CMD} in
 	echo " apply       - apply latest rules"
 	;;
 esac
-log finished
+log 2 finished
