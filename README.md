@@ -145,7 +145,7 @@ sudo cp fastly-allow-ufw/rsyslog.d/30-fastly-allow-ufw.conf /etc/rsyslog.d/
 sudo systemctl restart rsyslog.service
 ```
 
-下記のようなログが残る。
+`30-fastly-allow-ufw.conf` で指定している `/var/log/fastly-ufw-update.log` に下記のようなログが残る。
 
 ```log:/var/log/fastly-ufw-update.log
 [debug] ./ufw-update.sh show
