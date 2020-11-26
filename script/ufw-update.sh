@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PATH=/usr/sbin:/usr/bin
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
 set -e
 
 at_exit(){
