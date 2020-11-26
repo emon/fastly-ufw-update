@@ -29,8 +29,8 @@ cd fastly-ufw-update/
 
 `ufw-update.sh` は引数にサブコマンド名を取る。
 ```
-cd script
-./ufw-update.sh
+
+./script/ufw-update.sh
 Usage: ./ufw-update.sh [command]
  show        - show local and fastly's latest rules
  show local  - show local ufw rules
