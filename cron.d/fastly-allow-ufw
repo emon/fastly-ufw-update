@@ -1,0 +1,1 @@
+0 6 * * *	root 	DEBUG_LEVEL=1 /where/your/path/fastly-allow-ufw/script/ufw-update.sh apply

@@ -139,6 +139,12 @@ DEBUG_LEVEL=1 sudo --preserve-env=DEBUG_LEVEL ./ufw-update.sh apply
 `ufw-update.sh` と同一ディレクトリ内の `jq.py` を呼び出している。jquery をパースするためだけに利用している。
 python3.8 で動作を確認した。
 
+本リポジトリ内の cron.d ディレクトリ内のサンプル設定ファイルを修正して /etc/cron.d/ に配置する。
+```
+vi cron.d/fastly-allow-ufw
+sudo cp cron.d/fastly-allow-ufw /etc/cron.d
+```
+
 ## rsyslog の設定
 
 本リポジトリ内の rsyslog.d ディレクトリ内の設定ファイルをコピーして rsyslogd に適用する。
