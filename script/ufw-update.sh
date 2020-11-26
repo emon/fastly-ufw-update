@@ -90,13 +90,13 @@ case ${CMD} in
 		;;
 	    remote)
 		echo "# fastly's latest rules"
-		fastly_address
+		fastly_address | sort
 		;;
 	    '')
 		echo "# local ufw rules"
 		ufw_status | get_address | sort
 		echo "# fastly's latest rules"
-		fastly_address
+		fastly_address | sort
 		;;
 	    *)
 		echo "invalid subcommand" > /dev/stderr
