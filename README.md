@@ -150,8 +150,8 @@ sudo cp cron.d/fastly-allow-ufw /etc/cron.d
 本リポジトリ内の rsyslog.d ディレクトリ内の設定ファイルをコピーして rsyslogd に適用する。
 ```
 sudo cp fastly-allow-ufw/rsyslog.d/30-fastly-allow-ufw.conf /etc/rsyslog.d/
-sudo systemctl restart rsyslog.service
 sudo touch /var/log/fastly-ufw-update.log
+sudo systemctl restart rsyslog.service
 ```
 
 `/var/log/fastly-ufw-update.log` に下記のようなログが残るようになる。
