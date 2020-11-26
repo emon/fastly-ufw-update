@@ -3,8 +3,8 @@
 MAGIC_WORD='from https://api.fastly.com/public-ip-list'
 
 while read IP dummy; do
-    echo sudo ufw allow in from ${IP} to any port ssh comment "${MAGIC_WORD}"
-         sudo ufw allow in from ${IP} to any port ssh comment "${MAGIC_WORD}"
+    echo ufw allow in from ${IP} to any port ssh comment "${MAGIC_WORD}"
+         ufw allow in from ${IP} to any port ssh comment "${MAGIC_WORD}"
 done <<EOF
 23.235.32.0/20	# Fastly
 43.249.72.0/22	# Fastly

@@ -18,8 +18,8 @@
 
 MAGIC_WORD='from https://api.fastly.com/public-ip-list'
 
-sudo ufw status numbered | tee /dev/stderr | tac | grep "${MAGIC_WORD}" | while read rule; do
+ufw status numbered | tee /dev/stderr | tac | grep "${MAGIC_WORD}" | while read rule; do
     NUM=`echo $rule | grep -o '\[[[:space:]]*[0-9]*\]' | grep -o '[0-9]*'`
-    echo sudo ufw delete ${NUM}
-    yes |sudo ufw delete ${NUM}
+    echo  ufw delete ${NUM}
+    yes | ufw delete ${NUM}
 done

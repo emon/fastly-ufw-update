@@ -29,7 +29,7 @@ decho(){
 }
 
 ufw_status(){
-    sudo ufw status numbered | grep "${MAGIC_WORD}"
+    ufw status numbered | grep "${MAGIC_WORD}"
 }
 
 get_address(){
@@ -58,12 +58,12 @@ ufw_apply(){
 	ip=`echo $line | cut -b 2-`
 	case ${type} in
 	    "+" )
-		log 1 sudo ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
-	              sudo ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
+		log 1 ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
+	              ufw allow in from ${ip} to any port ssh comment "${MAGIC_WORD}"
 		;;
 	    "-" )
-		log 1 sudo ufw delete allow in from ${ip} to any port ssh
-		yes | sudo ufw delete allow in from ${ip} to any port ssh
+		log 1 ufw delete allow in from ${ip} to any port ssh
+		yes | ufw delete allow in from ${ip} to any port ssh
 		;;
 	esac
     done
