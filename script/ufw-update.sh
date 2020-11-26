@@ -39,7 +39,7 @@ get_address(){
 fastly_address(){
      fastly_json="$tempdir/json"
      curl -f -s -o "$fastly_json" https://api.fastly.com/public-ip-list
-     ./jq.py < "$fastly_json"
+     $(dirname $(realpath "$0"))/jq.py < "$fastly_json"
 }
 
 ufw_diff(){
